@@ -5,12 +5,15 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
 
 type httpServer struct {
 	listener net.Listener
+	rsp      http.ResponseWriter
+	req      *http.Request
 }
 
 func (s *httpServer) run(addr string) {
@@ -28,31 +31,46 @@ func (s *httpServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if req.Form == nil {
 		req.ParseForm()
 	}
+
+	s.rsp = w
+	s.req = req
+
+	if req.URL.Path == "/" {
+		s.handleDefaultPage()
+		return
+	}
+
 	for _, v := range siteInfo.staticDir {
 		if strings.Index(req.URL.Path, "/"+v+"/") == 0 {
-			s.handleStaticFile(w, req)
+			s.handleStaticFile()
+			return
 		}
 	}
 
 }
 
-// 处理静态文件
-func (s *httpServer) handleStaticFile(w http.ResponseWriter, req *http.Request) {
+func (s *httpServer) handleDefaultPage() {
+	log.Println(siteInfo)
 
-	fileName := siteInfo.workDir + strings.Replace(req.URL.Path, "..", "", -1)
+}
+
+// 处理静态文件
+func (s *httpServer) handleStaticFile() {
+
+	fileName := workPath + strings.Replace(s.req.URL.Path, "..", "", -1)
 
 	raw, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		s.errorPage(w, 404)
+		s.errorPage(404)
 		return
 	}
 
-	w.Write(raw)
+	s.rsp.Write(raw)
 }
 
 // 显示错误页面
-func (s *httpServer) errorPage(w http.ResponseWriter, code int) {
-	w.WriteHeader(code)
-	w.Write([]byte("<h1>" + strconv.Itoa(code) + " " + http.StatusText(404) + "</h1>"))
-	w.Write([]byte("<hr /> <span style=\"font-size:11px\">Powered by mdwiki " + VERSION + "</span>"))
+func (s *httpServer) errorPage(code int) {
+	s.rsp.WriteHeader(code)
+	s.rsp.Write([]byte("<h1>" + strconv.Itoa(code) + " " + http.StatusText(404) + "</h1>"))
+	s.rsp.Write([]byte("<hr /> <span style=\"font-size:11px\">Powered by mdwiki " + VERSION + "</span>"))
 }
