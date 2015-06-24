@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Unknwon/goconfig"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -42,15 +43,17 @@ func main() {
 	workPath = config.MustValue("site", "work_dir", ".")
 
 	//初始化配置信息
-	siteInfo = newSite()
-	siteInfo.url = config.MustValue("site", "url")
-	siteInfo.title = config.MustValue("site", "title")
-	siteInfo.keywords = config.MustValue("site", "keywords")
-	siteInfo.description = config.MustValue("site", "description")
-	siteInfo.docDir = config.MustValue("site", "doc_dir", "docs")
-	siteInfo.staticDir = strings.Split(config.MustValue("site", "static_dir", "static"), ",")
+	siteInfo = NewSite()
+	siteInfo.Url = config.MustValue("site", "url")
+	siteInfo.Title = config.MustValue("site", "title")
+	siteInfo.Keywords = config.MustValue("site", "keywords")
+	siteInfo.Description = config.MustValue("site", "description")
+	siteInfo.DocDir = config.MustValue("site", "doc_dir", "docs")
+	siteInfo.StaticDir = strings.Split(config.MustValue("site", "static_dir", "static"), ",")
 
 	siteInfo.build()
+
+	BuildTemplates("default")
 
 	//启动HTTP服务
 	http := &httpServer{}
@@ -61,4 +64,13 @@ func checkError(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func FileExists(file string) bool {
+	if _, err := os.Stat(file); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
 }
