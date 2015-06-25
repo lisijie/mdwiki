@@ -16,6 +16,15 @@ var (
 )
 
 func init() {
+	InitTemplate()
+}
+
+func RebuildTemplates(theme string) {
+	InitTemplate()
+	BuildTemplates(theme)
+}
+
+func InitTemplate() {
 	T = template.New("__top__")
 	funcMap := make(template.FuncMap)
 	funcMap["str2html"] = func(raw string) template.HTML {

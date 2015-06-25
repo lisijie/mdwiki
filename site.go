@@ -64,6 +64,12 @@ func (s *site) getCategoryByName(name string) *category {
 	return nil
 }
 
+func (s *site) rebuild() {
+	s.CategoryList = make(map[string]*category)
+	s.Posts = make(map[string]*post)
+	s.build()
+}
+
 func (s *site) build() {
 	basePath := filepath.ToSlash(workPath + "/" + s.PostDir)
 	baseLen := len(basePath)
@@ -79,6 +85,7 @@ func (s *site) build() {
 			post, err := s.makePost(basePath, path)
 			if err != nil {
 				log.Println("文章", path, "解析失败: ", err)
+				return nil
 			}
 
 			s.Posts[post.Permalink] = post

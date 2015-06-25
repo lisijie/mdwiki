@@ -57,6 +57,16 @@ func main() {
 
 	BuildTemplates(config.MustValue("site", "theme", "default"))
 
+	go fswatch(filepath.Join(workPath, siteInfo.PostDir), func() {
+		debug("重新构建网站数据...")
+		siteInfo.rebuild()
+	})
+
+	go fswatch(filepath.Join(workPath, ThemeDir), func() {
+		debug("重新编译模版...")
+		RebuildTemplates(config.MustValue("site", "theme", "default"))
+	})
+
 	//启动HTTP服务
 	http := &httpServer{}
 	http.run(*httpAddr)
