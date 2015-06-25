@@ -45,12 +45,17 @@ func (s *httpServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 // 首页
 func (s *httpServer) indexHandler(w http.ResponseWriter, req *http.Request) {
-	RenderTemplate(w, "index.html", siteInfo)
+	data := make(map[string]interface{})
+	data["title"] = siteInfo.Title
+	data["keywords"] = siteInfo.Keywords
+	data["description"] = siteInfo.Description
+	data["categoryList"] = siteInfo.CategoryList
+
+	RenderTemplate(w, "index.html", data)
 }
 
 // 处理页面
 func (s *httpServer) pageHandler(w http.ResponseWriter, req *http.Request) {
-
 	post := siteInfo.GetPost(req.URL.Path)
 	if post == nil {
 		s.errorPage(w, 404)
@@ -58,8 +63,12 @@ func (s *httpServer) pageHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	data := make(map[string]interface{})
+	data["title"] = siteInfo.Title
+	data["keywords"] = siteInfo.Keywords
+	data["description"] = siteInfo.Description
+	data["categoryList"] = siteInfo.CategoryList
 	data["post"] = post
-	data["site"] = siteInfo
+
 	RenderTemplate(w, "page.html", data)
 }
 

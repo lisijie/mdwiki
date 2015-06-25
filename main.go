@@ -6,18 +6,21 @@ import (
 	"github.com/Unknwon/goconfig"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
 const (
 	VERSION = "1.0"
 	RELEASE = ""
+	DEBUG   = true
 )
 
 var (
 	config   *goconfig.ConfigFile
 	siteInfo *site
 	workPath string
+	docPath  string
 	confFile = flag.String("conf", "./config.ini", "配置文件路径")
 	httpAddr = flag.String("http-addr", ":8080", "HTTP接口端口，默认为:8080")
 	showVer  = flag.Bool("version", false, "显示版本信息")
@@ -34,13 +37,12 @@ func main() {
 
 	//加载配置文件
 	config, err := goconfig.LoadConfigFile(*confFile)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	checkError(err)
 
 	//工作目录,web根目录
 	workPath = config.MustValue("site", "work_dir", ".")
+	workPath, err = filepath.Abs(workPath)
+	checkError(err)
 
 	//初始化配置信息
 	siteInfo = NewSite()
@@ -73,4 +75,8 @@ func FileExists(file string) bool {
 		}
 	}
 	return true
+}
+
+func debug(s ...interface{}) {
+	log.Println(s...)
 }
