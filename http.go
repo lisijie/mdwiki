@@ -56,20 +56,39 @@ func (s *httpServer) indexHandler(w http.ResponseWriter, req *http.Request) {
 
 // 处理页面
 func (s *httpServer) pageHandler(w http.ResponseWriter, req *http.Request) {
-	post := siteInfo.GetPost(req.URL.Path)
-	if post == nil {
-		s.errorPage(w, 404)
+
+	// 文章页面
+	post := siteInfo.getPost(req.URL.Path)
+	if post != nil {
+		data := make(map[string]interface{})
+		data["title"] = post.Title + " - " + siteInfo.Title
+		data["keywords"] = post.Keywords
+		data["description"] = post.Title
+		data["post"] = post
+		data["category"] = siteInfo.getCategoryByName(post.Category)
+
+		if post.Layout != "" {
+			RenderTemplate(w, post.Layout+".html", data)
+		} else {
+			RenderTemplate(w, "post.html", data)
+		}
 		return
 	}
 
-	data := make(map[string]interface{})
-	data["title"] = siteInfo.Title
-	data["keywords"] = siteInfo.Keywords
-	data["description"] = siteInfo.Description
-	data["categoryList"] = siteInfo.CategoryList
-	data["post"] = post
+	// 分类页面
+	cat := siteInfo.getCategory(req.URL.Path)
+	if cat != nil {
+		data := make(map[string]interface{})
+		data["title"] = cat.Name + " - " + siteInfo.Title
+		data["keywords"] = cat.Name + "," + siteInfo.Title
+		data["description"] = cat.Name
+		data["category"] = cat
 
-	RenderTemplate(w, "page.html", data)
+		RenderTemplate(w, "category.html", data)
+		return
+	}
+
+	s.errorPage(w, 404)
 }
 
 // 处理静态文件

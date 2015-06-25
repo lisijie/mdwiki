@@ -50,12 +50,12 @@ func main() {
 	siteInfo.Title = config.MustValue("site", "title")
 	siteInfo.Keywords = config.MustValue("site", "keywords")
 	siteInfo.Description = config.MustValue("site", "description")
-	siteInfo.DocDir = config.MustValue("site", "doc_dir", "docs")
+	siteInfo.PostDir = config.MustValue("site", "post_dir", "posts")
 	siteInfo.StaticDir = strings.Split(config.MustValue("site", "static_dir", "static"), ",")
 
 	siteInfo.build()
 
-	BuildTemplates("default")
+	BuildTemplates(config.MustValue("site", "theme", "default"))
 
 	//启动HTTP服务
 	http := &httpServer{}

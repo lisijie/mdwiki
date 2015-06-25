@@ -4,19 +4,15 @@
 
 <div id="index">
 
-	{{range $k, $v := .categoryList}}
-
-	<h2 id="intro">{{$v.Name}}</h2>
+	<h2 id="intro">{{.category.Name}}</h2>
 	<ul>
-		{{range $kk, $p := $v.Posts}}
+		{{range $k, $p := .category.Posts}}
 		<li class="pagelist">
 			<a href="{{$p.Permalink}}">{{$p.Title}}</a>
 		</li>
 		{{end}}
 	</ul>
 	<div class="clearfix"></div>
-
-	{{end}}
 
 
 </div>

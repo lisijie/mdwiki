@@ -1,7 +1,7 @@
 {{template "header.html" .}}
             
 <div id="header">
-    <div id="post-nav"><a href="/">Home</a>&nbsp;»&nbsp;<a href="/">xxx</a>&nbsp;»&nbsp;{{.post.Title}}</div>
+    <div id="post-nav"><a href="/">Home</a>&nbsp;»&nbsp;<a href="{{.category.Permalink}}">{{.category.Name}}</a>&nbsp;»&nbsp;{{.post.Title}}</div>
 </div>
 <div class="clearfix"></div>
 
