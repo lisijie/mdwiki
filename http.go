@@ -46,6 +46,7 @@ func (s *httpServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 // 首页
 func (s *httpServer) indexHandler(w http.ResponseWriter, req *http.Request) {
 	data := make(map[string]interface{})
+	data["siteName"] = siteInfo.Title
 	data["title"] = siteInfo.Title
 	data["keywords"] = siteInfo.Keywords
 	data["description"] = siteInfo.Description
@@ -61,6 +62,7 @@ func (s *httpServer) pageHandler(w http.ResponseWriter, req *http.Request) {
 	post := siteInfo.getPost(req.URL.Path)
 	if post != nil {
 		data := make(map[string]interface{})
+		data["siteName"] = siteInfo.Title
 		data["title"] = post.Title + " - " + siteInfo.Title
 		data["keywords"] = post.Keywords
 		data["description"] = post.Title
@@ -79,6 +81,7 @@ func (s *httpServer) pageHandler(w http.ResponseWriter, req *http.Request) {
 	cat := siteInfo.getCategory(req.URL.Path)
 	if cat != nil {
 		data := make(map[string]interface{})
+		data["siteName"] = siteInfo.Title
 		data["title"] = cat.Name + " - " + siteInfo.Title
 		data["keywords"] = cat.Name + "," + siteInfo.Title
 		data["description"] = cat.Name

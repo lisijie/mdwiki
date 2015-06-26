@@ -75,6 +75,13 @@ func (s *site) build() {
 	baseLen := len(basePath)
 
 	err := filepath.Walk(basePath, func(path string, info os.FileInfo, err error) error {
+		defer func() {
+			if err := recover(); err != nil {
+				debug("panic ", err)
+				return
+			}
+		}()
+
 		path = filepath.ToSlash(path)
 		if path == basePath {
 			return nil

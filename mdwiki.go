@@ -78,7 +78,7 @@ func checkError(err error) {
 	}
 }
 
-func FileExists(file string) bool {
+func fileExists(file string) bool {
 	if _, err := os.Stat(file); err != nil {
 		if os.IsNotExist(err) {
 			return false
