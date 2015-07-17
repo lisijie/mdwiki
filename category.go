@@ -10,7 +10,7 @@ type CategoryTable struct {
 	data map[string]*Category
 }
 
-func (t *CategoryTable) Add(name, link string) bool {
+func (t *CategoryTable) NewCategory(name, link string) bool {
 	if _, ok := t.data[name]; ok {
 		return false
 	}
@@ -20,6 +20,14 @@ func (t *CategoryTable) Add(name, link string) bool {
 		PostCount: 0,
 	}
 	return true
+}
+
+func (t *CategoryTable) UpdateCount(name string, count int) bool {
+	if v, ok := t.data[name]; ok {
+		v.PostCount = count
+		return true
+	}
+	return false
 }
 
 func (t *CategoryTable) GetAll() map[string]*Category {

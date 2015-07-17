@@ -49,11 +49,16 @@ func (s *Site) build() {
 			}
 
 			s.PostTable.AddPost(post)
-			s.CategoryTable.Add(post.Category, filepath.ToSlash(filepath.Dir(path)))
+			s.CategoryTable.NewCategory(post.Category, filepath.ToSlash(filepath.Dir(path)))
 		}
 
 		return nil
 	})
+
+	// 更新分类统计
+	for _, v := range s.CategoryTable.GetAll() {
+		s.CategoryTable.UpdateCount(v.Name, s.PostTable.GetCountByCategory(v.Name))
+	}
 
 	checkError(err)
 }
