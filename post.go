@@ -159,7 +159,7 @@ func (pl *PostList) Len() int {
 }
 
 func (pl *PostList) Less(i, j int) bool {
-	return pl.data[i].PostTime.Unix() < pl.data[j].PostTime.Unix()
+	return pl.data[i].PostTime.Unix() > pl.data[j].PostTime.Unix()
 }
 
 func (pl *PostList) Swap(i, j int) {
@@ -215,15 +215,15 @@ func MakePost(base, path string) (*Post, error) {
 
 	// 文章发布时间，如果头信息有指定日期，则使用头信息的日期进行解析
 	if p.Date != "" {
-		if pt, err := time.Parse("2006-01-02", p.Date); err != nil { //只有日期
+		if pt, err := time.Parse("2006-01-02", p.Date); err == nil { //只有日期
 			p.PostTime = pt
-		} else if pt, err := time.Parse("2006-01-02 15:04", p.Date); err != nil {
+		} else if pt, err := time.Parse("2006-01-02 15:04", p.Date); err == nil {
 			p.PostTime = pt
 		}
 	}
 	// 如果头信息解析失败或者没指定，则使用文件的修改时间
 	if p.PostTime.IsZero() {
-		if fi, err := os.Stat(filepath.Join(base, path)); err != nil {
+		if fi, err := os.Stat(filepath.Join(base, path)); err == nil {
 			p.PostTime = fi.ModTime()
 		}
 	}

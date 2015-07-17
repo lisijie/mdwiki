@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"math"
 	"net"
 	"net/http"
 	"strconv"
@@ -89,10 +88,12 @@ func (s *httpServer) pageHandler(w http.ResponseWriter, req *http.Request) {
 
 		page, _ := strconv.Atoi(req.URL.Query().Get("page"))
 		pageSize := config.GetInt("page_size", 10)
+		total := siteInfo.PostTable.GetCountByCategory(cat.Name)
 		data["postList"] = siteInfo.PostTable.GetPostListByCategory(cat.Name, page, pageSize)
 		data["page"] = page
 		data["pageSize"] = pageSize
-		data["totalPage"] = math.Ceil(float64(siteInfo.PostTable.GetCount() / pageSize))
+		data["total"] = total
+		data["pageBar"] = NewPager(page, total, pageSize, cat.Permalink, true).ToString()
 
 		RenderTemplate(w, "category.html", data)
 		return
