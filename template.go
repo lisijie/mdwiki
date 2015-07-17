@@ -37,6 +37,11 @@ func InitTemplate() {
 	funcMap["GetPostList"] = func(page, size int) []*Post {
 		return siteInfo.PostTable.GetPostList(page, size)
 	}
+	funcMap["ShowPageBar"] = func(page, total int, url string) template.HTML {
+		pageSize := config.GetInt("page_size", 10)
+		pager := NewPager(page, total, pageSize, url, true)
+		return template.HTML(pager.ToString())
+	}
 
 	T.Funcs(funcMap)
 }
