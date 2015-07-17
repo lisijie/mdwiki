@@ -27,8 +27,15 @@ func RebuildTemplates(theme string) {
 func InitTemplate() {
 	T = template.New("__top__")
 	funcMap := make(template.FuncMap)
+
 	funcMap["str2html"] = func(raw string) template.HTML {
 		return template.HTML(raw)
+	}
+	funcMap["GetPostListByCategory"] = func(cat string, page, size int) []*Post {
+		return siteInfo.PostTable.GetPostListByCategory(cat, page, size)
+	}
+	funcMap["GetPostList"] = func(page, size int) []*Post {
+		return siteInfo.PostTable.GetPostList(page, size)
 	}
 
 	T.Funcs(funcMap)

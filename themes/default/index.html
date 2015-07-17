@@ -5,10 +5,10 @@
 <div id="index">
 
 	{{range $k, $v := .categoryList}}
-
+	{{$postList := GetPostListByCategory $v.Name 1 10}}
 	<h2 id="intro">{{$v.Name}}</h2>
 	<ul>
-		{{range $kk, $p := $v.Posts}}
+		{{range $kk, $p := $postList}}
 		<li class="pagelist">
 			<a href="{{$p.Permalink}}">{{$p.Title}}</a>
 		</li>

@@ -15,7 +15,8 @@ func fswatch(dir string, cb func()) {
 	go func() {
 		for {
 			select {
-			case <-watcher.Event:
+			case ev := <-watcher.Event:
+        log.Println("event:", ev)
 				cb()
 			case err := <-watcher.Error:
 				log.Println("error:", err)

@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/Unknwon/goconfig"
+	"github.com/lisijie/go-conf"
 	"log"
 	"os"
 	"path/filepath"
@@ -17,8 +17,8 @@ const (
 )
 
 var (
-	config   *goconfig.ConfigFile
-	siteInfo *site
+	config   *goconf.Config
+	siteInfo *Site
 	workPath string
 	docPath  string
 	confFile = flag.String("conf", "./config.ini", "配置文件路径")
@@ -29,33 +29,34 @@ var (
 func main() {
 	flag.Parse()
 
-	//显示版本信息
+	// 显示版本信息
 	if *showVer {
 		fmt.Printf("mdwiki v%s(%s)\n", VERSION, RELEASE)
 		return
 	}
 
-	//加载配置文件
-	config, err := goconfig.LoadConfigFile(*confFile)
+	// 加载配置文件
+	var err error
+	config, err = goconf.NewConfig(*confFile)
 	checkError(err)
 
-	//工作目录,web根目录
-	workPath = config.MustValue("site", "work_dir", ".")
-	workPath, err = filepath.Abs(workPath)
+	// 工作目录,为配置文件所在目录
+	workPath, err = filepath.Abs(filepath.Dir(*confFile))
 	checkError(err)
+	debug("工作目录:", workPath)
 
 	//初始化配置信息
 	siteInfo = NewSite()
-	siteInfo.Url = config.MustValue("site", "url")
-	siteInfo.Title = config.MustValue("site", "title")
-	siteInfo.Keywords = config.MustValue("site", "keywords")
-	siteInfo.Description = config.MustValue("site", "description")
-	siteInfo.PostDir = config.MustValue("site", "post_dir", "posts")
-	siteInfo.StaticDir = strings.Split(config.MustValue("site", "static_dir", "static"), ",")
+	siteInfo.Url = config.GetString("site_url")
+	siteInfo.Name = config.GetString("site_name")
+	siteInfo.Keywords = config.GetString("site_keywords")
+	siteInfo.Description = config.GetString("site_description")
+	siteInfo.PostDir = config.GetString("post_dir", "posts")
+	siteInfo.StaticDir = strings.Split(config.GetString("static_dir", "static"), ",")
 
 	siteInfo.build()
 
-	BuildTemplates(config.MustValue("site", "theme", "default"))
+	BuildTemplates(config.GetString("theme", "default"))
 
 	go fswatch(filepath.Join(workPath, siteInfo.PostDir), func() {
 		debug("重新构建网站数据...")
@@ -64,7 +65,7 @@ func main() {
 
 	go fswatch(filepath.Join(workPath, ThemeDir), func() {
 		debug("重新编译模版...")
-		RebuildTemplates(config.MustValue("site", "theme", "default"))
+		RebuildTemplates(config.GetString("theme", "default"))
 	})
 
 	//启动HTTP服务

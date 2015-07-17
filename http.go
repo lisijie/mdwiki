@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"math"
 	"net"
 	"net/http"
 	"strconv"
@@ -32,7 +33,6 @@ func (s *httpServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		s.indexHandler(w, req)
 		return
 	}
-
 	for _, v := range siteInfo.StaticDir {
 		if strings.Index(req.URL.Path, "/"+v+"/") == 0 {
 			s.staticHandler(w, req)
@@ -46,11 +46,11 @@ func (s *httpServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 // 首页
 func (s *httpServer) indexHandler(w http.ResponseWriter, req *http.Request) {
 	data := make(map[string]interface{})
-	data["siteName"] = siteInfo.Title
-	data["title"] = siteInfo.Title
+	data["siteName"] = siteInfo.Name
+	data["title"] = siteInfo.Name
 	data["keywords"] = siteInfo.Keywords
 	data["description"] = siteInfo.Description
-	data["categoryList"] = siteInfo.CategoryList
+	data["categoryList"] = siteInfo.CategoryTable.GetAll()
 
 	RenderTemplate(w, "index.html", data)
 }
@@ -59,15 +59,15 @@ func (s *httpServer) indexHandler(w http.ResponseWriter, req *http.Request) {
 func (s *httpServer) pageHandler(w http.ResponseWriter, req *http.Request) {
 
 	// 文章页面
-	post := siteInfo.getPost(req.URL.Path)
+	post := siteInfo.PostTable.GetPostByPermalink(req.URL.Path)
 	if post != nil {
 		data := make(map[string]interface{})
-		data["siteName"] = siteInfo.Title
-		data["title"] = post.Title + " - " + siteInfo.Title
+		data["siteName"] = siteInfo.Name
+		data["title"] = post.Title + " - " + siteInfo.Name
 		data["keywords"] = post.Keywords
 		data["description"] = post.Title
 		data["post"] = post
-		data["category"] = siteInfo.getCategoryByName(post.Category)
+		data["category"] = siteInfo.CategoryTable.GetByName(post.Category)
 
 		if post.Layout != "" {
 			RenderTemplate(w, post.Layout+".html", data)
@@ -78,14 +78,21 @@ func (s *httpServer) pageHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// 分类页面
-	cat := siteInfo.getCategory(req.URL.Path)
+	cat := siteInfo.CategoryTable.GetByPermalink(req.URL.Path)
 	if cat != nil {
 		data := make(map[string]interface{})
-		data["siteName"] = siteInfo.Title
-		data["title"] = cat.Name + " - " + siteInfo.Title
-		data["keywords"] = cat.Name + "," + siteInfo.Title
+		data["siteName"] = siteInfo.Name
+		data["title"] = cat.Name + " - " + siteInfo.Name
+		data["keywords"] = cat.Name + "," + siteInfo.Name
 		data["description"] = cat.Name
 		data["category"] = cat
+
+		page, _ := strconv.Atoi(req.URL.Query().Get("page"))
+		pageSize := config.GetInt("page_size", 10)
+		data["postList"] = siteInfo.PostTable.GetPostListByCategory(cat.Name, page, pageSize)
+		data["page"] = page
+		data["pageSize"] = pageSize
+		data["totalPage"] = math.Ceil(float64(siteInfo.PostTable.GetCount() / pageSize))
 
 		RenderTemplate(w, "category.html", data)
 		return
