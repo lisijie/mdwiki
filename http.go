@@ -46,7 +46,7 @@ func (s *httpServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 func (s *httpServer) indexHandler(w http.ResponseWriter, req *http.Request) {
 	data := make(map[string]interface{})
 	data["siteName"] = siteInfo.Name
-	data["title"] = siteInfo.Name
+	data["pageTitle"] = siteInfo.Name
 	data["keywords"] = siteInfo.Keywords
 	data["description"] = siteInfo.Description
 	data["categoryList"] = siteInfo.CategoryTable.GetAll()
@@ -62,7 +62,7 @@ func (s *httpServer) pageHandler(w http.ResponseWriter, req *http.Request) {
 	if post != nil {
 		data := make(map[string]interface{})
 		data["siteName"] = siteInfo.Name
-		data["title"] = post.Title + " - " + siteInfo.Name
+		data["pageTitle"] = post.Title + " - " + siteInfo.Name
 		data["keywords"] = post.Keywords
 		data["description"] = post.Title
 		data["post"] = post
@@ -81,7 +81,7 @@ func (s *httpServer) pageHandler(w http.ResponseWriter, req *http.Request) {
 	if cat != nil {
 		data := make(map[string]interface{})
 		data["siteName"] = siteInfo.Name
-		data["title"] = cat.Name + " - " + siteInfo.Name
+		data["pageTitle"] = cat.Name + " - " + siteInfo.Name
 		data["keywords"] = cat.Name + "," + siteInfo.Name
 		data["description"] = cat.Name
 		data["category"] = cat

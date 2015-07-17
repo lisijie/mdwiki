@@ -18,6 +18,7 @@ type Post struct {
 	Permalink string    // 文章的URL
 	Category  string    // 分类名
 	Title     string    // 文章标题
+	Author    string    // 作者名称
 	Keywords  string    // 文章关键字
 	Date      string    // 发布时间字符串
 	PostTime  time.Time // 发布时间对象

@@ -1,0 +1,17 @@
+{{template "header.html" .}}
+            
+  <div class="content">
+    <section class='post'>
+      <h1 class="upcase">
+        <div class='date'>{{Date .post.PostTime "d F Y"}}</div>
+        {{.post.Title}}
+      </h1>
+
+      <hr />
+      
+      {{str2html .post.Content}}
+
+    </section>
+  </div>
+
+{{template "footer.html" .}}

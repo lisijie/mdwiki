@@ -89,6 +89,9 @@ func InitTemplate() {
 		format = replacer.Replace(format)
 		return t.Format(format)
 	}
+	funcMap["GetCategoryList"] = func() map[string]*Category {
+		return siteInfo.CategoryTable.GetAll()
+	}
 
 	T.Funcs(funcMap)
 }

@@ -1,0 +1,19 @@
+{{template "header.html" .}}
+
+<div class="content">
+  <ul class="posts">
+
+  {{range $k, $p := .postList}}
+  <li>
+  <small class="datetime muted" data-time="{{Date $p.PostTime "Y-m-d H:i:s O"}}">{{Date $p.PostTime "d F Y"}}</small>
+  <a href="{{$p.Permalink}}">{{$p.Title}}</a>
+  </li>
+  {{end}}
+
+  </ul>
+
+  {{str2html .pageBar}}
+
+</div>
+
+{{template "footer.html" .}}
