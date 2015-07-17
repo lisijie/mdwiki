@@ -6,7 +6,7 @@
 
 	{{range $k, $v := .categoryList}}
 	{{$postList := GetPostListByCategory $v.Name 1 10}}
-	<h2 id="intro">{{$v.Name}}</h2>
+	<h2 id="intro"><a href="{{$v.Permalink}}" style="font-size:12px;float:right;line-height:20px">更多</a> {{$v.Name}}</h2>
 	<ul>
 		{{range $kk, $p := $postList}}
 		<li class="pagelist">
