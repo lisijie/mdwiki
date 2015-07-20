@@ -29,8 +29,12 @@ mdwiki 是一个Go语言开发的wiki引擎，可用于构建wiki系统或个人
     ---
     layout: 文章使用的模版文件
     title: 文章标题
-    category: 文章类别
-    keywords: 文章关键字
+    type: 类型,post或page (可选，默认是post)
+    category: 文章类别 (当type=post时才有效)
+    keywords: 文章关键字 (可选)
+    permalink: 自定义URL (可选)
+    author: 作者 (可选)
+    date: 发布时间，格式为yyyy-mm-dd或yyyy-mm-dd HH:ii (可选, 默认为文件的修改时间)
     ---
 
 ### 模板函数：

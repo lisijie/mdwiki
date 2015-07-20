@@ -13,7 +13,6 @@ import (
 const (
 	VERSION = "1.0"
 	RELEASE = ""
-	DEBUG   = true
 )
 
 var (
@@ -24,6 +23,7 @@ var (
 	confFile = flag.String("conf", "./config.ini", "配置文件路径")
 	httpAddr = flag.String("http-addr", ":8080", "HTTP接口端口，默认为:8080")
 	showVer  = flag.Bool("version", false, "显示版本信息")
+	isDebug  = flag.Bool("debug", true, "是否启用调试模式")
 )
 
 func main() {
@@ -89,5 +89,7 @@ func fileExists(file string) bool {
 }
 
 func debug(s ...interface{}) {
-	log.Println(s...)
+	if *isDebug {
+		log.Println(s...)
+	}
 }

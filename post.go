@@ -21,6 +21,7 @@ type Post struct {
 	Author    string    // 作者名称
 	Keywords  string    // 文章关键字
 	Date      string    // 发布时间字符串
+	Type      string    // 类型： post(文章), page (独立页面)
 	PostTime  time.Time // 发布时间对象
 	Content   string    //文章内容
 }
@@ -40,13 +41,16 @@ func (pt *PostTable) AddPost(p *Post) bool {
 
 	pt.posts[p.FilePath] = p
 	pt.linkMap[p.Permalink] = p
-	pt.list.Add(p)
 
-	if v, ok := pt.categoryList[p.Category]; ok {
-		v.Add(p)
-	} else {
-		pt.categoryList[p.Category] = NewPostList()
-		pt.categoryList[p.Category].Add(p)
+	if p.Type == "post" {
+		pt.list.Add(p)
+
+		if v, ok := pt.categoryList[p.Category]; ok {
+			v.Add(p)
+		} else {
+			pt.categoryList[p.Category] = NewPostList()
+			pt.categoryList[p.Category].Add(p)
+		}
 	}
 
 	return true
@@ -204,10 +208,14 @@ func MakePost(base, path string) (*Post, error) {
 		return nil, err
 	}
 
+	if p.Type != "page" {
+		p.Type = "post"
+	}
+
 	if p.Title == "" {
 		return nil, errors.New("缺少文章头信息: title")
 	}
-	if p.Category == "" {
+	if p.Category == "" && p.Type == "post" {
 		return nil, errors.New("缺少文章头信息: category")
 	}
 	if p.Permalink == "" {

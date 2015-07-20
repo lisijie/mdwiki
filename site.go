@@ -48,8 +48,11 @@ func (s *Site) build() {
 				return nil
 			}
 
+			if _, err := s.CategoryTable.NewCategory(post.Category, filepath.ToSlash(filepath.Dir(path))); err != nil {
+				log.Println(err)
+				return nil
+			}
 			s.PostTable.AddPost(post)
-			s.CategoryTable.NewCategory(post.Category, filepath.ToSlash(filepath.Dir(path)))
 		}
 
 		return nil
