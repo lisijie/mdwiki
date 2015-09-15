@@ -32,6 +32,10 @@ func (s *httpServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		s.indexHandler(w, req)
 		return
 	}
+	if req.URL.Path == "/_reload" {
+		s.reloadHandler(w, req)
+		return
+	}
 	for _, v := range siteInfo.StaticDir {
 		if strings.Index(req.URL.Path, "/"+v+"/") == 0 {
 			s.staticHandler(w, req)
@@ -40,6 +44,19 @@ func (s *httpServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	s.pageHandler(w, req)
+}
+
+// 重新加载
+func (s *httpServer) reloadHandler(w http.ResponseWriter, req *http.Request) {
+	auth := req.URL.Query().Get("auth")
+	if auth != config.GetString("auth_key") {
+		s.errorPage(w, 403)
+	} else {
+		siteInfo.rebuild()
+		RebuildTemplates(config.GetString("theme", "default"))
+		w.WriteHeader(200)
+		w.Write([]byte("重新加载完成!"))
+	}
 }
 
 // 首页
@@ -111,6 +128,6 @@ func (s *httpServer) staticHandler(w http.ResponseWriter, req *http.Request) {
 // 显示错误页面
 func (s *httpServer) errorPage(w http.ResponseWriter, code int) {
 	w.WriteHeader(code)
-	w.Write([]byte("<h1>" + strconv.Itoa(code) + " " + http.StatusText(404) + "</h1>"))
+	w.Write([]byte("<h1>" + strconv.Itoa(code) + " " + http.StatusText(code) + "</h1>"))
 	w.Write([]byte("<hr /> <span style=\"font-size:11px\">Powered by mdwiki " + VERSION + "</span>"))
 }
