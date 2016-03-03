@@ -5,7 +5,10 @@
 </div>
 <div class="clearfix"></div>
 
-<div id="title">{{.post.Title}}</div>
+<div id="title">
+	{{.post.Title}}
+	<p style="text-align:center; font-size:12px; color:#666; margin: 5px">作者：{{.post.Author}}，日期：{{.post.Date}}</p>
+</div>
 <div id="content">
 {{str2html .post.Content}}
 </div>
